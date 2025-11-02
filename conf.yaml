@@ -1,0 +1,36 @@
+project:
+  team: Deep Pockets
+  title: Deep RL for AI Stock Portfolio Optimization
+data:
+  tickers: [NVDA, MSFT, AMD, AVGO, SMCI, GOOGL, META, AAPL, ASML, TSM]
+  start_date: "2018-01-01"
+  end_date: "2025-11-01"
+  price_provider: yfinance
+  sentiment_model: "yiyanghkust/finbert-tone"
+features:
+  price: [ret_1d, mom5, mom20, vol5]
+  text: [senti_pos, senti_neu, senti_neg, senti_count]
+  zscore_window: 252
+  vol_window: 5
+  lag_text_days: 1
+trading:
+  costs_bps_one_way: 5
+  turnover_penalty: 0.0005
+env:
+  cash_buffer: 0.0
+  rebalance_cadence: daily
+rl:
+  algo: PPO
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_ratio: 0.2
+  lr: 3e-4
+  epochs: 5
+  policy_mlp: [128, 64]
+  dropout: 0.1
+splits:
+  train: ["2018-01-01", "2022-12-31"]
+  valid: ["2023-01-01", "2023-12-31"]
+  test:  ["2024-01-01", "2025-11-01"]
+
+

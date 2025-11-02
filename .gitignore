@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+.env
+.venv
+.envrc
+.DS_Store
+data/**/*.parquet
+features/**/*.parquet
+.cache/
+
+
