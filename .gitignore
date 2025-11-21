@@ -6,8 +6,6 @@ __pycache__/
 .venv
 .envrc
 .DS_Store
-data/**/*.parquet
-features/**/*.parquet
 .cache/
 
 
