@@ -36,7 +36,7 @@ def linear_schedule(initial_value):
 # ============================================
 # Evaluate trained agent
 # ============================================
-def evaluate(model, env, initial_capital=100000):
+def evaluate(model, env, initial_value=100000):
     """
     Evaluation for VecEnv:
     - reset() returns obs ONLY (VecNormalize API)
@@ -44,23 +44,23 @@ def evaluate(model, env, initial_capital=100000):
     """
     obs = env.reset()
     done = False
+    nav = [initial_value]
     rewards = []
-    nav = [initial_capital]
 
     while not done:
         action, _ = model.predict(obs, deterministic=True)
         obs, reward, done, info = env.step(action)
 
-        # reward is array([value]) since we have 1 env
         r = float(reward[0])
         rewards.append(r)
 
-        # NAV uses *unscaled* returns stored inside env
-        raw_ret = info.get("raw_reward", None)
-        if raw_ret is None:
-            # fallback: undo reward scaling (reward_scale=100)
-            raw_ret = r / 100.0
+        # info is a list of dicts in DummyVecEnv
+        info_dict = info[0] if isinstance(info, list) else info
 
+        # get raw_reward stored by the environment (unscaled daily return)
+        raw_ret = info_dict.get("raw_reward", r / 100.0)
+
+        # NAV update uses unscaled returns
         nav.append(nav[-1] * (1 + raw_ret))
 
     return np.array(nav), np.array(rewards)
@@ -220,7 +220,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--agent", type=str, default="ppo", choices=["ppo", "sac", "td3"])
-    parser.add_argument("--data", type=str, default="./data/cleaned_features_updated_23-25.csv")
+    parser.add_argument("--data", type=str, default="./data/features_with_prices.csv")
 
     parser.add_argument("--train_start", type=str, default="2023-01-01")
     parser.add_argument("--train_end", type=str, default="2024-06-30")
